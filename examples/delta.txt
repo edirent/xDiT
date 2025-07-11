@@ -1,0 +1,188 @@
+salloc -A bcrn-delta-gpu \
+  --partition=gpuA100x8-interactive \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=8 \
+  --gpus-per-node=8 \
+  --mem=128g \
+  --time=01:00:00 \
+
+  salloc -A bcrn-delta-gpu \
+  --partition=gpuA100x4-interactive \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=4 \
+  --gpus-per-node=4 \
+  --mem=128g \
+  --time=01:00:00 \
+
+torchrun --nproc_per_node=1 scripts/fig3.py
+
+torchrun --nproc_per_node=2 scripts/fig3.py
+
+torchrun --nproc_per_node=4 scripts/fig3.py
+
+torchrun --nproc_per_node=1 scripts/sdxl_example.py
+
+mkdir -p results
+torchrun --nproc_per_node=4 \
+  examples/fig3.py \
+  --model models/FLUX.1-dev \
+  --pipefusion_parallel_degree 4 \
+  --ulysses_degree 1 \
+  --warmup_steps 0 \
+  --num_inference_steps 20 \
+  --batch_size 20
+
+torchrun --nproc_per_node=2 examples/fig3.py \
+  --model models/FLUX.1-dev \
+  --ulysses_degree   1 \
+  --ring_degree      1 \
+  --warmup_steps     0 \
+  --num_inference_steps 20 \
+  --prompt "a cute cat lady"
+
+  torchrun --nproc_per_node=2 examples/fig3.py \
+  --model models/FLUX.1-dev \
+  --ring_degree 2 \
+  --ulysses_degree 1 \
+  --warmup_steps 0 \
+  --num_inference_steps 20 \
+  --prompt "a cute cat lady"
+
+
+N=1 
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 115.22 seconds
+Average time per image: 5.76 seconds
+Throughput: 0.17 images/second
+
+N = 2
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 84.38 seconds
+Average time per image: 4.22 seconds
+Throughput: 0.24 images/second
+
+N = 4
+
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 114.71 seconds
+Average time per image: 5.74 seconds
+Throughput: 0.17 images/second
+
+sbatch \
+  -A bcrn-delta-gpu \
+  -p gpuA100x8 \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=8 \
+  --gpus-per-node=8 \
+  --mem=128g \
+  --time=1:00:00 \
+
+  -J fig3_torchrun \
+  -o scripts/fig3-tr%j.out \
+  -e scripts/fig3-tr%j.err \
+  --wrap="cd /u/lanius/distrifuser/scripts && \
+    module purge && module load anaconda3_gpu cuda/11.7 && \
+    source activate myenv && \
+    torchrun --nproc_per_node=8 fig3.py"
+
+
+srun --pty /bin/bash
+
+
+scp "lanius@login.delta.ncsa.illinois.edu:/u/lanius/distrifuser/profiler_logs/gpua006.delta.ncsa.illinois.edu_1329621.rank2.pt.trace.json" ~/Documents/salloc -A bcrn-delta-gpu \
+  --partition=gpuA100x8-interactive \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=8 \
+  --gpus-per-node=8 \
+  --mem=128g \
+  --time=01:00:00 \
+
+  salloc -A bcrn-delta-gpu \
+  --partition=gpuA100x4-interactive \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=4 \
+  --gpus-per-node=4 \
+  --mem=128g \
+  --time=01:00:00 \
+
+torchrun --nproc_per_node=1 scripts/fig3.py
+
+torchrun --nproc_per_node=2 scripts/fig3.py
+
+torchrun --nproc_per_node=4 scripts/fig3.py
+
+torchrun --nproc_per_node=1 scripts/sdxl_example.py
+
+N=1 
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 115.22 seconds
+Average time per image: 5.76 seconds
+Throughput: 0.17 images/second
+
+N = 2
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 84.38 seconds
+Average time per image: 4.22 seconds
+Throughput: 0.24 images/second
+
+N = 4
+
+=== Generation Complete Statistics ===
+Total images: 20
+Total generation time: 114.71 seconds
+Average time per image: 5.74 seconds
+Throughput: 0.17 images/second
+
+sbatch \
+  -A bcrn-delta-gpu \
+  -p gpuA100x8 \
+  --nodes=1 \
+  --ntasks-per-node=1 \
+  --cpus-per-task=8 \
+  --gpus-per-node=8 \
+  --mem=128g \
+  --time=1:00:00 \
+
+  -J fig3_torchrun \
+  -o scripts/fig3-tr%j.out \
+  -e scripts/fig3-tr%j.err \
+  --wrap="cd /u/lanius/distrifuser/scripts && \
+    module purge && module load anaconda3_gpu cuda/11.7 && \
+    source activate myenv && \
+    torchrun --nproc_per_node=8 fig3.py"
+
+
+xfxa
+
+scp "lanius@login.delta.ncsa.illinois.edu:/u/lanius/distrifuser/profiler_logs/gpua006.delta.ncsa.illinois.edu_1329621.rank2.pt.trace.json" ~/Documents/
+
+pipe paralleism
+N = 1
+epoch time: 201.50 sec
+
+N = 2
+epoch time: 128.42 sec
+
+N = 4:
+epoch time: 94.22 sec,
+
+seq paralleism
+
+N = 1:
+epoch time: 212.31 sec
+
+N = 2: 1230.903636 7s 355ms 501us 608ns
+epoch time: 158.55 sec,
+
+N = 4:2848.608072 6s 470ms 334us 561ns
+epoch time: 93.02 sec,
